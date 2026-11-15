@@ -1,0 +1,109 @@
+/*
+ * Kiosk styles. Designed to be read from a few feet away on a shop monitor:
+ * very large text and a full-width colour block per result.
+ *
+ * The result panel's colour comes from its data-status attribute, which kiosk.js sets to
+ * the "status" value from the API (SIGNED_IN, SIGNED_OUT, ALREADY_SIGNED_IN, ...).
+ */
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #111;
+    color: #fff;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 2rem;
+    gap: 1.5rem;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+#scan-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#scan-form label {
+    font-size: 1.5rem;
+    color: #ccc;
+}
+
+#student-id {
+    width: min(32rem, 90vw);
+    font-size: 2rem;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    border-radius: 0.5rem;
+    border: 3px solid #555;
+    background: #222;
+    color: #fff;
+}
+
+#student-id:focus {
+    outline: none;
+    border-color: #4ea1ff;
+}
+
+/* ---- Result panel ---------------------------------------------------------------- */
+
+#result {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 1rem;
+    padding: 2rem;
+    background: #222;
+    transition: background-color 0.2s;
+}
+
+#result p {
+    margin: 0.25rem 0;
+}
+
+#result-headline {
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+#result-name {
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 600;
+}
+
+#result-hours {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+#result-message {
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* One colour per outcome. Colours are paired with distinct headline text so the result
+   is clear to colour-blind students too. */
+#result[data-status="SIGNED_IN"]          { background: #1b7f3b; }  /* green */
+#result[data-status="SIGNED_OUT"]         { background: #1f5fae; }  /* blue */
+#result[data-status="ALREADY_SIGNED_IN"],
+#result[data-status="ALREADY_SIGNED_OUT"] { background: #8a6d00; }  /* amber */
+#result[data-status="UNKNOWN_ID"],
+#result[data-status="ERROR"]              { background: #a12828; }  /* red */
