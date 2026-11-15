@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+  Kiosk page. Spring Boot serves everything in src/main/resources/static/ as-is, and
+  index.html is served at "/". Open http://<pi-address>:8080/ on the kiosk computer.
+
+  Behaviour lives in kiosk.js, styling in kiosk.css. No inline <script> or <style> on
+  purpose: the app sends a strict Content-Security-Policy that blocks inline code
+  (see SecurityHeadersFilter.java).
+
+  FERPA: this page must never list students or show more than first name + last initial,
+  sign-in/sign-out, and today's hours.
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shop Sign In / Sign Out</title>
+    <link rel="stylesheet" href="kiosk.css">
+    <script src="kiosk.js" defer></script>
+</head>
+<body>
+<main>
+    <h1>Shop Sign In / Sign Out</h1>
+
+    <!-- The barcode scanner acts like a keyboard: it "types" the ID and presses Enter,
+         which submits this form. autocomplete="off" stops the browser remembering IDs. -->
+    <form id="scan-form" autocomplete="off">
+        <label for="student-id">Scan your badge or type your student ID, then press Enter</label>
+        <input id="student-id" name="studentId" type="text" inputmode="text"
+               autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+               maxlength="64" autofocus>
+    </form>
+
+    <!-- Result panel. kiosk.js fills it in and sets data-status, which kiosk.css uses for colour.
+         aria-live makes screen readers announce the result. -->
+    <section id="result" data-status="IDLE" aria-live="assertive">
+        <p id="result-headline">Ready</p>
+        <p id="result-name"></p>
+        <p id="result-hours"></p>
+        <p id="result-message">Scan your badge to sign in or out.</p>
+    </section>
+</main>
+</body>
+</html>

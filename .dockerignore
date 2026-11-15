@@ -1,0 +1,8 @@
+target/
+.git/
+.github/
+.env
+backups/
+scripts/
+*.dump
+*.csv

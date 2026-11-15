@@ -1,0 +1,68 @@
+# =====================================================================================
+# Application settings.
+#
+# Any value here can be overridden with an environment variable: upper-case it and
+# replace "." and "-" with "_". For example spring.datasource.url -> SPRING_DATASOURCE_URL,
+# soarin.duplicate-window -> SOARIN_DUPLICATEWINDOW. docker-compose.yml does exactly
+# that for the database connection.
+# =====================================================================================
+
+spring:
+  application:
+    name: soarin-timesheet
+
+  # Database connection. These defaults suit running the app directly on a dev machine with
+  # a local PostgreSQL; in Docker they are replaced by the values from docker-compose.yml.
+  datasource:
+    url: jdbc:postgresql://localhost:5432/soarin
+    username: soarin
+    password: soarin
+
+  jpa:
+    # Don't keep database sessions open while rendering web responses (a common Spring
+    # performance trap). All DB work happens inside @Transactional service methods.
+    open-in-view: false
+    hibernate:
+      # Flyway owns the schema (src/main/resources/db/migration). Hibernate only checks
+      # that the Java entities match it and refuses to start if they don't.
+      ddl-auto: validate
+    properties:
+      hibernate:
+        # Read and write timestamps as UTC, whatever the server's own time zone is.
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+  shutdown: graceful
+  error:
+    # Never put exception details or stack traces in HTTP error responses.
+    include-message: never
+    include-stacktrace: never
+    include-exception: false
+    include-binding-errors: never
+
+# Soarin-specific settings (see org.soarin.timesheet.config.ShopProperties).
+soarin:
+  # The shop day runs midnight to midnight in this zone (handles EST/EDT automatically).
+  zone: America/New_York
+  # A second scan of the same badge within this time is ignored ("already recorded").
+  duplicate-window: 60s
+  scheduling:
+    # Background jobs (midnight auto sign-out). Tests turn this off.
+    enabled: true
+  auto-close:
+    # Spring cron format: second minute hour day-of-month month day-of-week, in soarin.zone.
+    # "5 0 * * * *" = 5 seconds past every hour. The 00:00:05 run is the midnight sign-out;
+    # the others are harmless catch-up runs.
+    cron: "5 0 * * * *"
+
+logging:
+  level:
+    root: INFO
+    # Keep SQL logging OFF in production: bound parameters would include student data.
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
